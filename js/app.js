@@ -23,6 +23,7 @@
   const StorageManager = (function () {
     const STORAGE_KEY = 'expense_transactions';
     const THEME_KEY   = 'expense_theme';
+    const BUDGET_KEY = 'expense_budget_limit';
 
     /** @type {boolean} true when localStorage is available */
     let _available = true;
@@ -119,8 +120,16 @@
 
     // Run availability check immediately.
     _available = _checkAvailability();
+    function saveBudget(value) {
+  if (!_available) return;
+  localStorage.setItem(BUDGET_KEY, String(value));
+}
 
-    return { save, load, saveTheme, loadTheme, isAvailable };
+function loadBudget() {
+  const raw = localStorage.getItem(BUDGET_KEY);
+  return raw ? Number(raw) : null;
+}
+    return { save, load, saveTheme, loadTheme, saveBudget, loadBudget, isAvailable };
   })();
 
   /* ============================================================
@@ -496,6 +505,100 @@
 
     return { render };
   })();
+  const BudgetController = (function () {
+  let _budget = null;
+
+  function _formatCurrency(value) {
+    return `Rp. ${Number(value).toLocaleString('id-ID')}`;
+  }
+
+  function init() {
+    _budget = StorageManager.loadBudget();
+  }
+
+  function setBudget(value) {
+  _budget = Number(value);
+  StorageManager.saveBudget(_budget);
+  render();
+}
+
+  function getBudget() {
+    return _budget;
+  }
+
+  function renderBudget(total) {
+  const input = document.getElementById('budget-input');
+  const status = document.getElementById('budget-status');
+  const setBtn = document.getElementById('set-budget-btn');
+  const editBtn = document.getElementById('edit-budget-btn');
+
+  if (!input || !status || !setBtn || !editBtn) return;
+  console.log('Budget:', _budget);
+  if (!_budget) {
+  input.value = '';
+  input.placeholder = 'No budget set';
+  input.disabled = false;
+
+  status.textContent = '';
+
+  setBtn.hidden = false;
+  setBtn.style.display = 'inline-flex';
+  setBtn.textContent = 'Tambah Limit';
+
+  editBtn.hidden = true;
+  editBtn.style.display = 'none';
+
+  return;
+}
+
+const remaining = _budget - total;
+
+input.value = _formatCurrency(_budget);
+input.disabled = true;
+
+setBtn.hidden = true;
+setBtn.style.display = 'none';
+
+editBtn.hidden = false;
+editBtn.style.display = 'inline-flex';
+
+if (remaining < 0) {
+  status.textContent = `⚠️ Budget exceeded by ${_formatCurrency(Math.abs(remaining))}`;
+  status.classList.add('warning');
+} else {
+  status.textContent = `Remaining budget: ${_formatCurrency(remaining)}`;
+  status.classList.remove('warning');
+}
+  if (remaining < 0) {
+    status.textContent = `⚠️ Budget exceeded by ${_formatCurrency(Math.abs(remaining))}`;
+    status.classList.add('warning');
+  } else {
+    status.textContent = `Remaining budget: ${_formatCurrency(remaining)}`;
+    status.classList.remove('warning');
+  }
+}
+
+  function enableEdit() {
+  const input = document.getElementById('budget-input');
+  const setBtn = document.getElementById('set-budget-btn');
+  const editBtn = document.getElementById('edit-budget-btn');
+
+  if (!input || !setBtn || !editBtn) return;
+
+  input.disabled = false;
+  input.value = _budget || '';
+  input.focus();
+
+  setBtn.hidden = false;
+  setBtn.style.display = 'inline-flex';
+  setBtn.textContent = 'Simpan Limit';
+
+  editBtn.hidden = true;
+  editBtn.style.display = 'none';
+}
+
+  return { init, setBudget, getBudget, renderBudget, enableEdit };
+})();
 
   /* ============================================================
      SortController
@@ -559,22 +662,32 @@
      Unified render()
      Called after every mutation to keep all views consistent.
      ============================================================ */
-  function render() {
-    const dir         = SortController.getDirection();
-    const transactions = dir
-      ? TransactionStore.getSorted(dir)
-      : TransactionStore.getAll();
-    const totals      = TransactionStore.getTotalsByCategory();
-    const balance     = TransactionStore.getTotalBalance();
-    const hasData     = transactions.length > 0;
+ let searchKeyword = '';
 
-    BalanceController.render(balance);
-    TransactionListRenderer.render(transactions);
-    ChartController.update(totals);
-    ChartController.showPlaceholder(hasData);
-    MonthlySummaryRenderer.render(TransactionStore.getGroupedByMonth());
+function render() {
+  const dir = SortController.getDirection();
+
+  let transactions = dir
+    ? TransactionStore.getSorted(dir)
+    : TransactionStore.getAll();
+
+  if (searchKeyword) {
+    transactions = transactions.filter(function (t) {
+      return t.name.toLowerCase().includes(searchKeyword.toLowerCase());
+    });
   }
 
+  const totals = TransactionStore.getTotalsByCategory();
+  const balance = TransactionStore.getTotalBalance();
+  const hasData = TransactionStore.getAll().length > 0;
+
+  BalanceController.render(balance);
+  BudgetController.renderBudget(balance);
+  TransactionListRenderer.render(transactions);
+  ChartController.update(totals);
+  ChartController.showPlaceholder(hasData);
+  MonthlySummaryRenderer.render(TransactionStore.getGroupedByMonth());
+}
   /* ============================================================
      App — bootstrap, form helpers, event wiring
      ============================================================ */
@@ -659,6 +772,7 @@ if (formModal) formModal.hidden = true;
     function init() {
       // Theme
       ThemeController.init();
+      BudgetController.init();
 
       // Storage availability check
       if (!StorageManager.isAvailable()) {
@@ -721,7 +835,32 @@ if (formModal) {
           render();
         });
       }
+      const searchInput = document.getElementById('search-input');
+if (searchInput) {
+  searchInput.addEventListener('input', function (e) {
+    searchKeyword = e.target.value;
+    render();
+  });
+}
+      const setBudgetBtn = document.getElementById('set-budget-btn');
+const editBudgetBtn = document.getElementById('edit-budget-btn');
 
+function handleBudgetInput() {
+  const budgetInput = document.getElementById('budget-input');
+  if (!budgetInput) return;
+
+  const value = Number(String(budgetInput.value).replace(/\D/g, ''));
+
+  if (!value || value <= 0) {
+    alert('Budget harus lebih dari 0.');
+    return;
+  }
+
+  BudgetController.setBudget(value);
+}
+
+if (setBudgetBtn) setBudgetBtn.addEventListener('click', handleBudgetInput);
+if (editBudgetBtn) editBudgetBtn.addEventListener('click', BudgetController.enableEdit);
       // Event: Theme toggle
       const themeBtn = document.getElementById('theme-toggle');
       if (themeBtn) themeBtn.addEventListener('click', ThemeController.toggle.bind(ThemeController));
@@ -741,12 +880,12 @@ if (formModal) {
      (Guard against Node/Jest environments where `document` is absent.)
      ============================================================ */
   if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', App.init);
-    } else {
-      App.init();
-    }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', App.init);
+  } else {
+    App.init();
   }
+}
 
   /* ============================================================
      CommonJS exports for Node / Jest testing
