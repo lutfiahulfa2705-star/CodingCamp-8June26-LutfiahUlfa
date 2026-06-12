@@ -20,11 +20,19 @@
       <p class="balance-label">Total Balance</p>
       <p id="balance-display" class="balance-amount">$0.00</p>
     </section>
+    
+    <!-- Floating Add Button -->
+<button id="open-form-btn" class="floating-add-btn" aria-label="Open add transaction form">+</button>
 
-    <!-- Input Form -->
-    <section class="form-section" aria-label="Add transaction">
+<!-- Input Form Modal -->
+<div id="form-modal" class="modal-overlay" hidden>
+  <section class="form-section modal-card" aria-label="Add transaction">
+    <div class="modal-header">
       <h2 class="section-title">Add Transaction</h2>
-      <form id="transaction-form" novalidate>
+      <button id="close-form-btn" class="modal-close" type="button">✕</button>
+    </div>
+
+    <form id="transaction-form" novalidate>
         <div class="form-group">
           <label for="item-name">Item Name</label>
           <input
@@ -58,13 +66,13 @@
             <option value="Transport">Transport</option>
             <option value="Fun">Fun</option>
           </select>
-        </div>
-
+        </div><br>
         <p id="form-error" class="form-error" role="alert" aria-live="polite" aria-atomic="true"></p>
 
         <button type="button" id="add-btn" class="btn btn--primary">Add Transaction</button>
       </form>
     </section>
+  </div>
 
     <!-- Main Content: List + Chart -->
     <main class="main-content">
