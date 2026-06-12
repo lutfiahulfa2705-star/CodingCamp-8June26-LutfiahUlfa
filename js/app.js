@@ -287,12 +287,8 @@
      * @returns {string}
      */
     function _formatCurrency(value) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-      }).format(value);
-    }
+  return `Rp. ${Number(value).toLocaleString('id-ID')}`;
+}
 
     /**
      * Write the formatted balance to #balance-display.
@@ -316,12 +312,8 @@
      * @returns {string}
      */
     function _formatCurrency(value) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-      }).format(value);
-    }
+  return `Rp. ${Number(value).toLocaleString('id-ID')}`;
+}
 
     /**
      * Rebuild #transaction-list from the provided array.
@@ -455,12 +447,8 @@
      ============================================================ */
   const MonthlySummaryRenderer = (function () {
     function _formatCurrency(value) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-      }).format(value);
-    }
+  return `Rp. ${Number(value).toLocaleString('id-ID')}`;
+}
 
     /**
      * Render monthly totals inside #monthly-summary-content.
@@ -647,6 +635,8 @@
 
       TransactionStore.add(transaction);
       resetForm();
+    const formModal = document.getElementById('form-modal');
+if (formModal) formModal.hidden = true;
     }
 
     /** Handle delete via event delegation on #transaction-list. */
@@ -687,6 +677,29 @@
       // Event: Add button
       const addBtn = document.getElementById('add-btn');
       if (addBtn) addBtn.addEventListener('click', _handleAdd);
+      const openFormBtn = document.getElementById('open-form-btn');
+const closeFormBtn = document.getElementById('close-form-btn');
+const formModal = document.getElementById('form-modal');
+
+if (openFormBtn && formModal) {
+  openFormBtn.addEventListener('click', function () {
+    formModal.hidden = false;
+  });
+}
+
+if (closeFormBtn && formModal) {
+  closeFormBtn.addEventListener('click', function () {
+    formModal.hidden = true;
+  });
+}
+
+if (formModal) {
+  formModal.addEventListener('click', function (e) {
+    if (e.target === formModal) {
+      formModal.hidden = true;
+    }
+  });
+}
 
       // Event: Submit on Enter within the form
       const form = document.getElementById('transaction-form');
