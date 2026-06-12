@@ -649,3 +649,68 @@ body {
   font-size: 1.25rem;
   cursor: pointer;
 }
+.budget-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.budget-input {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 1.4rem;
+  font-weight: 700;
+  width: 100%;
+  max-width: 260px;
+  outline: none;
+}
+
+.budget-input::placeholder {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.budget-save-btn {
+  width: auto;
+  padding-inline: 1.5rem;
+}
+
+.budget-edit-btn {
+  border: none;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+
+  cursor: pointer;
+  font-size: 1.25rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  line-height: 1;
+  padding: 0;
+}
+
+.search-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
