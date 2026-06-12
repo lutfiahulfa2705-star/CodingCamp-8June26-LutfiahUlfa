@@ -20,7 +20,29 @@
       <p class="balance-label">Total Balance</p>
       <p id="balance-display" class="balance-amount">$0.00</p>
     </section>
-    
+    <section class="budget-section" aria-label="Budget limit">
+  <div class="budget-info">
+    <p class="balance-label">Budget Limit</p>
+
+    <input
+      id="budget-input"
+      class="budget-input"
+      type="text"
+      placeholder="No budget set"
+      min="1"
+    />
+
+    <p id="budget-status" class="budget-status"></p>
+  </div>
+
+  <button id="set-budget-btn" class="btn btn--primary budget-save-btn" type="button">
+    Tambah Limit
+  </button>
+
+  <button id="edit-budget-btn" class="budget-edit-btn" type="button" hidden>
+    ✏️
+  </button>
+</section>
     <!-- Floating Add Button -->
 <button id="open-form-btn" class="floating-add-btn" aria-label="Open add transaction form">+</button>
 
@@ -83,6 +105,12 @@
           <h2 class="section-title">Transactions</h2>
           <button id="sort-btn" class="btn btn--secondary" aria-label="Sort transactions by amount">Sort ↕</button>
         </div>
+        <input
+  type="text"
+  id="search-input"
+  class="search-input"
+  placeholder="Search transaction..."
+/>
         <ul id="transaction-list" class="transaction-list" aria-label="List of transactions">
           <!-- Transaction items rendered by JS -->
         </ul>
