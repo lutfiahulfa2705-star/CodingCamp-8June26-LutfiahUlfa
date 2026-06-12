@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense &amp; Budget Visualizer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- Header -->
+    <header class="app-header">
+      <h1>Expense &amp; Budget Visualizer</h1>
+      <button id="theme-toggle" class="btn btn--icon" aria-label="Toggle dark/light theme">🌓</button>
+    </header>
+
+    <!-- Balance Display -->
+    <section class="balance-section" aria-label="Total balance">
+      <p class="balance-label">Total Balance</p>
+      <p id="balance-display" class="balance-amount">$0.00</p>
+    </section>
+
+    <!-- Input Form -->
+    <section class="form-section" aria-label="Add transaction">
+      <h2 class="section-title">Add Transaction</h2>
+      <form id="transaction-form" novalidate>
+        <div class="form-group">
+          <label for="item-name">Item Name</label>
+          <input
+            type="text"
+            id="item-name"
+            name="item-name"
+            placeholder="e.g. Lunch"
+            autocomplete="off"
+            aria-required="true"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount</label>
+          <input
+            type="number"
+            id="amount"
+            name="amount"
+            placeholder="0.00"
+            min="0.01"
+            step="0.01"
+            aria-required="true"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" name="category" aria-required="true">
+            <option value="">-- Select category --</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Fun">Fun</option>
+          </select>
+        </div>
+
+        <p id="form-error" class="form-error" role="alert" aria-live="polite" aria-atomic="true"></p>
+
+        <button type="button" id="add-btn" class="btn btn--primary">Add Transaction</button>
+      </form>
+    </section>
+
+    <!-- Main Content: List + Chart -->
+    <main class="main-content">
+
+      <!-- Transaction List -->
+      <section class="list-section" aria-label="Transaction history">
+        <div class="section-header">
+          <h2 class="section-title">Transactions</h2>
+          <button id="sort-btn" class="btn btn--secondary" aria-label="Sort transactions by amount">Sort ↕</button>
+        </div>
+        <ul id="transaction-list" class="transaction-list" aria-label="List of transactions">
+          <!-- Transaction items rendered by JS -->
+        </ul>
+      </section>
+
+      <!-- Chart -->
+      <section class="chart-section" aria-label="Spending by category">
+        <h2 class="section-title">Spending by Category</h2>
+        <div id="chart-container" class="chart-container">
+          <canvas
+            id="chart-canvas"
+            role="img"
+            aria-label="Pie chart showing spending distribution across Food, Transport, and Fun categories"
+          ></canvas>
+          <p id="chart-placeholder" class="chart-placeholder">No spending data yet.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Monthly Summary -->
+    <section id="monthly-summary" class="monthly-summary" aria-label="Monthly spending summary">
+      <h2 class="section-title">Monthly Summary</h2>
+      <div id="monthly-summary-content" class="monthly-summary-content">
+        <!-- Monthly totals rendered by JS -->
+      </div>
+    </section>
+
+    <!-- Storage warning banner (hidden by default) -->
+    <div id="storage-warning" class="storage-warning" role="alert" aria-live="polite" hidden>
+      ⚠️ Storage unavailable — changes will not persist.
+    </div>
+
+  </div><!-- /.app-wrapper -->
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- App -->
+  <script src="js/app.js"></script>
+</body>
+</html>
